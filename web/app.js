@@ -28,4 +28,10 @@ void function () {
   socket.onclose = function() {
     confirm('Disconnected. Refresh?') && location.reload(true)
   }
+
+  if ('ontouchstart' in document) {
+    document.ontouchstart = function(event) {
+      event.preventDefault();
+    }
+  }
 } ()
