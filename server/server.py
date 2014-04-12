@@ -37,7 +37,7 @@ def send(loop):
         image.putalpha(mask)
 
         bio = io.BytesIO()
-        image.save(bio, format="PNG")
+        image.save(bio, format="PNG", optimize=True)
         data = str(base64.b64encode(bio.getvalue()), 'ascii')
         bio.close()
 
