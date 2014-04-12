@@ -5,18 +5,23 @@ void function () {
   var context = canvas.getContext('2d')
   var socket = new WebSocket('ws://' + prompt('Connect to:', location.hostname + ':' + PORT))
 
-  socket.binaryType = "arraybuffer"
-
   socket.onopen = function() {
     socket.onmessage = function (event) {
       var size = event.data.split('x')
       canvas.width = size[0]
       canvas.height = size[1]
-      socket.onmessage = function (event) {
-        var imageData = context.createImageData(canvas.width, canvas.height)
-        imageData.data.set(new Uint8Array(event.data))
-        context.putImageData(imageData, 0, 0)
+
+      function onmessage (event) {
+        var image = new Image()
+        image.onload = function () {
+          console.log('load')
+          context.drawImage(image, 0, 0)
+          socket.onmessage = onmessage
+        }
+        image.src = "data:image/png;base64," + event.data
+        delete socket.onmessage
       }
+      socket.onmessage = onmessage
     }
   }
 
