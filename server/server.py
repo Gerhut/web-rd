@@ -1,17 +1,14 @@
-import io
 import asyncio
 import traceback
-import base64
 
-from PIL import Image, ImageGrab
 import websockets
+
+import screenshot
+import mouse
 
 PORT = 12345
 data_futures = set()
-#bbox = (0, 0, 100, 100)
-bbox = None
-size = ImageGrab.grab(bbox).size
-mask = Image.new('L', size, color=255)
+size = screenshot.size
 
 @asyncio.coroutine
 def connected(client, uri):
@@ -26,6 +23,18 @@ def connected(client, uri):
             data_futures.remove(data_future)
             if not client.open: break
             yield from client.send(data)
+            if not client.open: break
+            data = yield from client.recv()
+            if type(data) == str:
+                cmd = data[0]
+                pos = map(int, data[1:].split(','))
+                if cmd == 'd':
+                    mouse.down(*pos)
+                elif cmd == 'm':
+                    mouse.move(*pos)
+                elif cmd == 'u':
+                    mouse.up(*pos)
+
 
         print('Client disconnected.')
     except:
@@ -33,13 +42,7 @@ def connected(client, uri):
 
 def send(loop):
     try:
-        image = ImageGrab.grab(bbox)
-        image.putalpha(mask)
-
-        bio = io.BytesIO()
-        image.save(bio, format="PNG", optimize=True)
-        data = str(base64.b64encode(bio.getvalue()), 'ascii')
-        bio.close()
+        data = screenshot.get_data_uri()
 
         for data_future in data_futures:
             data_future.set_result(data)
