@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from sys import argv
 from base64 import b64encode
 

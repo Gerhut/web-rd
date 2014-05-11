@@ -7,9 +7,9 @@ Requirement
 -----------
 
 - Server
-    - Python 3.4
-    - (Pillow)[http://pillow.readthedocs.org/]
-    - (WebSockets)[http://aaugustin.github.io/websockets/]
+    - Node.js
+    - ws
+    - node-qt
 - Client
     - Canvas
     - WebSocket
